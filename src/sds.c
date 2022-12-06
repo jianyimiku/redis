@@ -130,14 +130,19 @@ sds sdsMakeRoomFor(sds s, size_t addlen) {
     struct sdshdr *sh, *newsh;
     size_t free = sdsavail(s);
     size_t len, newlen;
-
+    // 如果未使用的空间大于等于拼接字符串的长度
     if (free >= addlen) return s;
+    // 获取当前字符串已经使用的空间
     len = sdslen(s);
     sh = (void*) (s-(sizeof(struct sdshdr)));
+    // 新长度为已经使用的空间加上需要拼接的空间
     newlen = (len+addlen);
+    // 如果小于1MB
     if (newlen < SDS_MAX_PREALLOC)
+        // 扩容为新空间的2倍
         newlen *= 2;
     else
+        // 否则扩容为新空间+1M
         newlen += SDS_MAX_PREALLOC;
     newsh = zrealloc(sh, sizeof(struct sdshdr)+newlen+1);
     if (newsh == NULL) return NULL;
